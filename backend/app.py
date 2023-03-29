@@ -11,16 +11,19 @@ def index():
     return "Hello World!"
 
 @app.route('/summarize', methods=['POST'])
-def summarizeRoute():
+def summarizeText():
     input_text = request.json['text']  # get the input text from the client
-    
+
     model = get_model()
     
     summary = summarize(
         input_text,
         model,
+        min_sentence_length=14, 
+        top_k=3, 
+        batch_size=4
     )
-
+    
     return jsonify({'summary': summary})  # return the summary as a JSON response
 
 
