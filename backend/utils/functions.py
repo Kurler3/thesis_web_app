@@ -1,26 +1,19 @@
 import torch
+import os
 import spacy
 nlp = spacy.load('en_core_web_lg')
-import tdqm
+from tqdm import tqdm
 
-from backend.models.model import SentenceBertClass
-from backend.utils.constants import model_path
+from models.model import SentenceBertClass
 
 from transformers import AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-MiniLM-L3-v2')
 
-def mean_pooling(model_output, attention_mask):
-    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
-    sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
-    return sum_embeddings / sum_mask
-
 # GET MODEL
 def get_model():
     extractive_model = SentenceBertClass() 
-    extractive_model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    extractive_model.load_state_dict(torch.load(os.path.abspath("models/minilm_bal_exsum.pth"), map_location=torch.device('cpu')))
     extractive_model.eval(); 
     
 # tokenize text as required by BERT based models
@@ -39,10 +32,10 @@ def get_tokens(text):
 
 # get predictions given some an array of sentences and their corresponding documents
 def predict(model,sents, doc):
-  sent_id, sent_mask = get_tokens(sents, tokenizer)
+  sent_id, sent_mask = get_tokens(sents)
   sent_id, sent_mask = torch.tensor(sent_id, dtype=torch.long),torch.tensor(sent_mask, dtype=torch.long)
  
-  doc_id, doc_mask = get_tokens([doc],tokenizer)
+  doc_id, doc_mask = get_tokens([doc])
   doc_id, doc_mask = doc_id * len(sents), doc_mask* len(sents)
   doc_id, doc_mask = torch.tensor(doc_id, dtype=torch.long),torch.tensor(doc_mask, dtype=torch.long)
 
@@ -56,7 +49,7 @@ def summarize(doc, model, min_sentence_length=14, top_k=3, batch_size=3):
     if len(sent) > min_sentence_length: 
       doc_sentences.append(str(sent))
   
-  doc_id, doc_mask = get_tokens([doc],tokenizer)
+  doc_id, doc_mask = get_tokens([doc])
   doc_id, doc_mask = doc_id * batch_size, doc_mask* batch_size
   doc_id, doc_mask = torch.tensor(doc_id, dtype=torch.long),torch.tensor(doc_mask, dtype=torch.long)
 
