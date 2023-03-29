@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
-
 from utils.functions import get_model, summarize
+from flask_cors import CORS
 
-import os
 
 app = Flask(__name__)
+CORS(app)
+
 
 @app.route("/")
 def index():
@@ -16,15 +17,16 @@ def summarizeText():
 
     model = get_model()
     
-    summary = summarize(
+    summarizeResult = summarize(
         input_text,
         model,
         min_sentence_length=14, 
         top_k=3, 
         batch_size=4
     )
+
     
-    return jsonify({'summary': summary})  # return the summary as a JSON response
+    return jsonify({'summary': summarizeResult[0]})  # return the summary as a JSON response
 
 
 if __name__ == "__main__":
