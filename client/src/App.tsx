@@ -5,8 +5,6 @@ import InputTextContainer from './components/InputTextContainer.component';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import ClipLoader from "react-spinners/ClipLoader";
-
 interface IState {
   loading: boolean;
   inputText: string;
@@ -27,16 +25,15 @@ function App() {
   /////////////////////////
 
   // HANDLE CLICK ON SUMMARIZE
-  const handleClickSummarize = useCallback(async () => {
+  const handleClickSummarize = useCallback(async (inputText: string) => {
 
     try {
-
-      if (state.inputText.length > 50) {
+      if (inputText.length > 50) {
 
 
         setState((prevState) => ({ ...prevState, loading: true }))
 
-        const result = await axios.post("http://localhost:5000/summarize", { "text": state.inputText });
+        const result = await axios.post("http://localhost:5000/summarize", { "text": inputText });
 
         console.log("Result...", result);
 
@@ -47,7 +44,7 @@ function App() {
 
       } else {
         //  SHOW TOAST
-        console.log("Input length too small...", state.inputText.length)
+        console.log("Input length too small...", inputText.length)
 
 
 
@@ -113,6 +110,7 @@ function App() {
           handleInputChange={handleInputChange}
           handleSummarize={handleClickSummarize}
           resultSummarization={state.resultSummarization}
+          loading={state.loading}
         />
 
         {/* RESULT SUMMARIZED TEXT CONTAINER */}
@@ -137,7 +135,7 @@ function App() {
                     </div>
                   </div>
 
-                  <div className='p-5'>
+                  <div className='p-5 font-medium'>
                     {
                       state.resultSummarization
                     }
