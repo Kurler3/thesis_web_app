@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 root {
     font-family: 'Open Sans', sans-serif;
 }
@@ -23,3 +24,21 @@ body {
 .textColor {
     color: #252525;
 }
+
+/* define the animation */
+.fade-in {
+    animation-name: fadeInOpacity;
+    animation-duration: 200ms;
+    animation-timing-function: ease-in-out;
+}
+  
+  /* define the keyframes */
+  @keyframes fadeInOpacity {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  

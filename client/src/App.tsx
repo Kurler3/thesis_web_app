@@ -35,8 +35,6 @@ function App() {
 
         const result = await axios.post("http://localhost:5000/summarize", { "text": inputText });
 
-        console.log("Result...", result);
-
         setState((prevState) => ({
           ...prevState,
           resultSummarization: result.data.summary,
@@ -45,8 +43,6 @@ function App() {
       } else {
         //  SHOW TOAST
         console.log("Input length too small...", inputText.length)
-
-
 
         toast.info("Input length too small! Need at least 50 characters");
       }
@@ -86,6 +82,19 @@ function App() {
     })
   }, []);
 
+  // HANDLE PASTE
+  const handlePaste = useCallback(() => {
+
+    navigator.clipboard.readText().then((textToPaste) => {
+      setState((prevState) => {
+        return {
+          ...prevState,
+          inputText: prevState.inputText + textToPaste,
+        }
+      })
+    })
+
+  }, []);
 
   //////////////////////////
   // RENDER ////////////////
@@ -111,6 +120,7 @@ function App() {
           handleSummarize={handleClickSummarize}
           resultSummarization={state.resultSummarization}
           loading={state.loading}
+          handlePaste={handlePaste}
         />
 
         {/* RESULT SUMMARIZED TEXT CONTAINER */}
