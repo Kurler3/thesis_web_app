@@ -36,8 +36,6 @@ def get_tokens(text):
     return ids, mask
 
 # get predictions given some an array of sentences and their corresponding documents
-
-
 def predict(model, sents, doc):
     sent_id, sent_mask = get_tokens(sents)
     sent_id, sent_mask = torch.tensor(
@@ -68,6 +66,7 @@ def summarize(doc, model, min_sentence_length=14, top_k=3, batch_size=3):
     scores = []
     # run predictions using some batch size
     for i in tqdm(range(int(len(doc_sentences) / batch_size) + 1)):
+        
         batch_start = i*batch_size
         batch_end = (i+1) * batch_size if (i+1) * \
             batch_size < len(doc) else len(doc)-1

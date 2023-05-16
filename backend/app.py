@@ -20,8 +20,8 @@ def summarizeText():
     summarizeResult = summarize(
         input_text,
         model,
-        min_sentence_length=14, 
-        top_k=3, 
+        min_sentence_length=5, 
+        top_k=10, 
         batch_size=4
     )
 
